@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "lib": [ "es2017", "dom" ],
+        "module": "umd",
+        "outDir": "dist",
+        "target": "es5"
+    },
+    "include": [
+        "./src/**/*.ts"
+    ],
+    "exclude": [
+        "_LiteralArgumentBuilder.ts",
+        "_LiteralCommandNode.ts"
+    ]
+}

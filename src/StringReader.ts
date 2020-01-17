@@ -73,11 +73,15 @@ export class StringReader {
     }
     
     isAllowedInUnquotedString(c: string): boolean {
-        return c >= '0' && c <= '9'
-            || c >= 'A' && c <= 'Z'
-            || c >= 'a' && c <= 'z'
-            || c == '_' || c == '-'
-            || c == '.' || c == '+';
+        return c >= "0" && c <= "9"
+            || c >= "A" && c <= "Z"
+            || c >= "a" && c <= "z"
+            || c == "_" || c == "-"
+            || c == "." || c == "+";
+    }
+
+    isQuotedStringStart(c: string): boolean {
+        return c === "'" || c === "\"";
     }
 
     readUnquotedString(): string {
@@ -86,6 +90,41 @@ export class StringReader {
             this.skip();
         }
         return this.string.substring(start, this.cursor);
+    }
+
+    readStringUntil(terminator: string): string {
+        let result = [];
+        let escaped = false;
+        while (this.canRead()) {
+            const c = this.read();
+            if (escaped) {
+                if (c === terminator || c === "\\") {
+                    result.push(c);
+                    escaped = false;
+                } else {
+                    this.setCursor(this.cursor - 1);
+                    // TODO: Throw exception
+                }
+            } else if (c === "\\") {
+                escaped = true;
+            } else if (c === terminator) {
+                return result.join("");
+            } else {
+                result.push(c);
+            }
+        }
+    }
+
+    readString(): string {
+        if (!this.canRead()) {
+            return "";
+        }
+        const next = this.peek();
+        if (this.isQuotedStringStart(next)) {
+            this.skip();
+            return this.readStringUntil(next);
+        }
+        return this.readUnquotedString();
     }
 
     readBoolean(): boolean {

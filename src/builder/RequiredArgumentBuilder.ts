@@ -1,6 +1,8 @@
-import { ArgumentBuilder, LiteralCommandNode } from "../internal";
-import { ArgumentType } from "../arguments/ArgumentType";
-import { ArgumentCommandNode } from "../tree/ArgumentCommandNode";
+import { 
+    ArgumentBuilder,
+    ArgumentType,
+    ArgumentCommandNode
+} from "../internal";
 
 export class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgumentBuilder<T>> {
     private name: string;

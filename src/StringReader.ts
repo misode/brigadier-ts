@@ -71,5 +71,33 @@ export class StringReader {
         // TODO: Throw exceptions
         return parseInt(number);
     }
+    
+    isAllowedInUnquotedString(c: string): boolean {
+        return c >= '0' && c <= '9'
+            || c >= 'A' && c <= 'Z'
+            || c >= 'a' && c <= 'z'
+            || c == '_' || c == '-'
+            || c == '.' || c == '+';
+    }
+
+    readUnquotedString(): string {
+        const start = this.cursor;
+        while (this.canRead() && this.isAllowedInUnquotedString(this.peek())) {
+            this.skip();
+        }
+        return this.string.substring(start, this.cursor);
+    }
+
+    readBoolean(): boolean {
+        const start = this.cursor;
+        const value = this.readUnquotedString();
+        if (value === "true") {
+            return true
+        } else if (value === "false") {
+            return false
+        } else {
+            // TODO: Throw exception
+        }
+    }
 
 }

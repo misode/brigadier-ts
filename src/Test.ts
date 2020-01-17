@@ -1,10 +1,11 @@
 import {
     CommandDispatcher,
+    CommandContext,
     literal,
-    integer
+    argument,
+    integer,
+    bool
 } from "./internal";
-import { argument } from "./builder/RequiredArgumentBuilder";
-import { CommandContext } from "./context/CommandContext";
 
 const dispatcher = new CommandDispatcher();
 dispatcher.register(literal("random")
@@ -28,11 +29,26 @@ dispatcher.register(
         )
 )
 
-console.log("Root:", dispatcher.getRoot().getName());
+dispatcher.register(
+    literal("fly")
+        .then(
+            argument("bool", bool())
+                .executes(c => {
+                    if (c.get("bool")) {
+                        console.log("Flying enabled");
+                    } else {
+                        console.log("Flying disabled");
+                    }
+                    return 0;
+                })
+        )
+)
+
+console.log("--- Commands ---");
 dispatcher.getRoot().getChildren().forEach(v => {
-    console.log("  Child:", v.getName());
+    console.log(v.getName());
     v.getChildren().forEach(w => {
-        console.log("    Child:", w.getName());
+        console.log(" ", w.getName());
     });
 });
 
@@ -41,3 +57,4 @@ console.log("Execute 'random'", dispatcher.execute("random"))
 console.log("Execute 'boo'", dispatcher.execute("boo"))
 console.log("Execute 'boo haha'", dispatcher.execute("boo haha"))
 console.log("Execute 'double 3'", dispatcher.execute("double 3"))
+console.log("Execute 'fly false'", dispatcher.execute("fly false"))

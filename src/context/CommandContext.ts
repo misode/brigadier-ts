@@ -1,5 +1,8 @@
-import { Command, CommandNode, StringRange } from "../internal";
-import { ParsedArgument } from "./ParsedArgument";
+import { Command,
+    CommandNode,
+    StringRange,
+    ParsedArgument
+} from "../internal";
 
 export class CommandContext {
     private arguments: Map<string, ParsedArgument<any>>; 

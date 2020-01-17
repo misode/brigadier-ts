@@ -1,4 +1,4 @@
-import { ArgumentType, StringReader, CommandContext } from "../internal";
+import { ArgumentType, StringReader } from "../internal";
 
 export class IntegerArgumentType implements ArgumentType<number> {
     private minimum: number;

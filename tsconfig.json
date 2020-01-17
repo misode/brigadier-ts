@@ -1,15 +1,9 @@
 {
     "compilerOptions": {
-        "lib": [ "es2017", "dom" ],
-        "module": "umd",
-        "outDir": "dist",
+        "lib": [ "es2015", "dom" ],
+        "outDir": "./dist",
+        "sourceMap": true,
+        "module": "commonjs",
         "target": "es5"
-    },
-    "include": [
-        "./src/**/*.ts"
-    ],
-    "exclude": [
-        "_LiteralArgumentBuilder.ts",
-        "_LiteralCommandNode.ts"
-    ]
+    }
 }

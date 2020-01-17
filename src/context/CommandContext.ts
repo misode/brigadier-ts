@@ -1,12 +1,15 @@
 import { Command, CommandNode, StringRange } from "../internal";
+import { ParsedArgument } from "./ParsedArgument";
 
 export class CommandContext {
+    private arguments: Map<string, ParsedArgument<any>>; 
     private command: Command;
     private rootNode: CommandNode;
     private child: CommandContext;
     private range: StringRange;
 
-    constructor(command: Command, rootNode: CommandNode, child: CommandContext, range: StringRange) {
+    constructor(parsedArguments: Map<string, ParsedArgument<any>>, command: Command, rootNode: CommandNode, child: CommandContext, range: StringRange) {
+        this.arguments = parsedArguments;
         this.command = command;
         this.rootNode = rootNode;
         this.child = child;
@@ -31,5 +34,11 @@ export class CommandContext {
 
     getRootNode(): CommandNode {
         return this.rootNode;
+    }
+
+    get(name: string): any {
+        const argument = this.arguments.get(name);
+        // TODO: Throw exception when argument is null
+        return argument.getResult();
     }
 }

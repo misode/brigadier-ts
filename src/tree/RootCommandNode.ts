@@ -1,4 +1,4 @@
-import { CommandNode } from '../internal';
+import { CommandNode, StringReader, CommandContextBuilder } from '../internal';
 
 export class RootCommandNode extends CommandNode {
 
@@ -6,8 +6,7 @@ export class RootCommandNode extends CommandNode {
         super(null);
     }
 
-    parse(): number {
-        return -1;
+    parse(reader: StringReader, contextBuilder: CommandContextBuilder): void {
     }
 
     getName(): string {

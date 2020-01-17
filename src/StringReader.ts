@@ -58,4 +58,18 @@ export class StringReader {
         this.cursor += 1;
     }
 
+    isAllowedNumber(c: string): boolean {
+        return c >= "0" && c <= "9" || c === "." || c === "-";
+    }
+
+    readInt(): number {
+        const start = this.cursor;
+        while (this.canRead() && this.isAllowedNumber(this.peek())) {
+            this.skip();
+        }
+        const number = this.string.substring(start, this.cursor);
+        // TODO: Throw exceptions
+        return parseInt(number);
+    }
+
 }

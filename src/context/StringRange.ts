@@ -11,6 +11,12 @@ export class StringRange {
         return new StringRange(pos, pos);
     }
 
+    static encompassing(a: StringRange, b: StringRange): StringRange {
+        const start = Math.min(a.getStart(), b.getStart());
+        const end = Math.max(a.getEnd(), b.getEnd());
+        return new StringRange(start, end)
+    }
+
     getStart(): number {
         return this.start;
     }

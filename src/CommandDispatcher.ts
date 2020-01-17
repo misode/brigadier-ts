@@ -30,7 +30,7 @@ export class CommandDispatcher {
         const command = parse.getReader().getString();
         const original = parse.getContext().build(command);
 
-        result = original.getCommand() ? original.getCommand().call(null) : -1;
+        result = original.getCommand() ? original.getCommand().call(null, original) : -1;
 
         return result;
     }

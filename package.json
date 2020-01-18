@@ -1,11 +1,11 @@
 {
   "name": "brigadier-ts",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/CommandDispatcher.js",
+  "description": "TypeScript port of Mojang/brigadier",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -19,9 +19,6 @@
   },
   "homepage": "https://github.com/misode/brigadier-ts#readme",
   "devDependencies": {
-    "ts-loader": "^6.2.1",
-    "typescript": "^3.7.5",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "typescript": "^3.7.5"
   }
 }

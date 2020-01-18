@@ -2,13 +2,19 @@
 TypeScript port of [Mojang/brigadier](https://github.com/Mojang/brigadier)
 
 ## Installation
-This project uses webpack to compile and bundle the code into `dist/brigadier.js`.
 ```
-npm run build
+npm install brigadier-ts
 ```
 
 ## Usage
 ```js
+import {
+    CommandDispatcher,
+    literal,
+    argument,
+    integer
+} from "brigadier-ts";
+
 const dispatcher = new CommandDispatcher();
 dispatcher.register(literal("random")
     .executes(c => 4)

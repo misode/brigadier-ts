@@ -1,15 +1,15 @@
 import { CommandNode, StringRange } from "../internal";
 
-export class ParsedCommandNode {
-    private node: CommandNode;
+export class ParsedCommandNode<S> {
+    private node: CommandNode<S>;
     private range: StringRange;
     
-    constructor(node: CommandNode, range: StringRange) {
+    constructor(node: CommandNode<S>, range: StringRange) {
         this.node = node;
         this.range = range;
     }
 
-    getNode(): CommandNode {
+    getNode(): CommandNode<S> {
         return this.node;
     }
 

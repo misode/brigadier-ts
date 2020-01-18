@@ -4,7 +4,7 @@ import {
     ArgumentCommandNode
 } from "../internal";
 
-export class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgumentBuilder<T>> {
+export class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private name: string;
     private type: ArgumentType<T>;
 
@@ -14,7 +14,7 @@ export class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
         this.type = type;
     }
 
-    getThis(): RequiredArgumentBuilder<T> {
+    getThis(): RequiredArgumentBuilder<S, T> {
         return this;
     }
 
@@ -26,7 +26,7 @@ export class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
         return this.type;
     }
     
-    build(): ArgumentCommandNode<T> {
+    build(): ArgumentCommandNode<S, T> {
         const result = new ArgumentCommandNode(this.getName(), this.getType(), this.getCommand())
         for (const argument of this.getArguments()) {
             result.addChild(argument);
@@ -35,6 +35,6 @@ export class RequiredArgumentBuilder<T> extends ArgumentBuilder<RequiredArgument
     }
 }
 
-export function argument(name: string, type: ArgumentType<any>): RequiredArgumentBuilder<any> {
-    return new RequiredArgumentBuilder<any>(name, type);
+export function argument(name: string, type: ArgumentType<any>): RequiredArgumentBuilder<any, any> {
+    return new RequiredArgumentBuilder<any, any>(name, type);
 }

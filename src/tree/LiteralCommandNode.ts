@@ -6,15 +6,15 @@ import {
     CommandContextBuilder
 } from '../internal';
 
-export class LiteralCommandNode extends CommandNode {
+export class LiteralCommandNode<S> extends CommandNode<S> {
     private literal: string;
     
-    constructor(literal: string, command: Command) {
+    constructor(literal: string, command: Command<S>) {
         super(command);
         this.literal = literal;
     }
 
-    parse(reader: StringReader, contextBuilder: CommandContextBuilder): void {
+    parse(reader: StringReader, contextBuilder: CommandContextBuilder<S>): void {
         const start = reader.getCursor();
         const end = this.parseInternal(reader);
         if (end > -1) {

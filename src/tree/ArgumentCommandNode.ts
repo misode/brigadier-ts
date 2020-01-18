@@ -7,11 +7,11 @@ import {
 } from '../internal';
 import { ParsedArgument } from '../context/ParsedArgument';
 
-export class ArgumentCommandNode<T> extends CommandNode {
+export class ArgumentCommandNode<S, T> extends CommandNode<S> {
     name: string;
     type: ArgumentType<T>;
 
-    constructor(name: string, type: ArgumentType<T>, command: Command) {
+    constructor(name: string, type: ArgumentType<T>, command: Command<S>) {
         super(command);
         this.name = name;
         this.type = type;
@@ -21,7 +21,7 @@ export class ArgumentCommandNode<T> extends CommandNode {
         return this.type;
     }
 
-    parse(reader: StringReader, contextBuilder: CommandContextBuilder): void {
+    parse(reader: StringReader, contextBuilder: CommandContextBuilder<S>): void {
         const start = reader.getCursor();
         const result = this.type.parse(reader);
         const parsed = new ParsedArgument<T>(start, reader.getCursor(), result);

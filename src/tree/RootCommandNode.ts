@@ -1,12 +1,12 @@
 import { CommandNode, StringReader, CommandContextBuilder } from '../internal';
 
-export class RootCommandNode extends CommandNode {
+export class RootCommandNode<S> extends CommandNode<S> {
 
     constructor() {
         super(null);
     }
 
-    parse(reader: StringReader, contextBuilder: CommandContextBuilder): void {
+    parse(reader: StringReader, contextBuilder: CommandContextBuilder<S>): void {
     }
 
     getName(): string {

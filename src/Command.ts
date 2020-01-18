@@ -1,3 +1,3 @@
 import { CommandContext } from "./internal";
 
-export type Command = (c: CommandContext) => number | void;
+export type Command<S> = (c: CommandContext<S>) => number | void;

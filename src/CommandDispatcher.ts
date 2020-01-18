@@ -8,39 +8,39 @@ import {
     ParseResults
 } from "./internal";
 
-export class CommandDispatcher {
+export class CommandDispatcher<S> {
 
-    private root: RootCommandNode;
+    private root: RootCommandNode<S>;
 
     constructor() {
         this.root = new RootCommandNode();
     }
 
-    register(command: LiteralArgumentBuilder): LiteralCommandNode {
+    register(command: LiteralArgumentBuilder<S>): LiteralCommandNode<S> {
         const build = command.build();
         this.root.addChild(build);
         return build;
     }
 
-    execute(parse: ParseResults | string): number {
+    execute(parse: ParseResults<S> | string, source: S): number {
         if (typeof(parse) === "string") {
-            parse = this.parse(new StringReader(parse));
+            parse = this.parse(new StringReader(parse), source);
         }
         let result = 0;
         const command = parse.getReader().getString();
-        const original = parse.getContext().build(command);
+        const context = parse.getContext().withSource(source).build(command);
 
-        result |= (original.getCommand() ? original.getCommand().call(null, original) : -1);
+        result |= (context.getCommand() ? context.getCommand().call(null, context) : -1);
 
         return result;
     }
 
-    parse(reader: StringReader): ParseResults {
-        const context = new CommandContextBuilder(this, this.root, reader.getCursor());
+    parse(reader: StringReader, source: S): ParseResults<S> {
+        const context = new CommandContextBuilder<S>(this, source, this.root, reader.getCursor());
         return this.parseNodes(this.root, reader, context);
     }
 
-    private parseNodes(node: CommandNode, originalReader: StringReader, contextSoFar: CommandContextBuilder): ParseResults {
+    private parseNodes(node: CommandNode<S>, originalReader: StringReader, contextSoFar: CommandContextBuilder<S>): ParseResults<S> {
         let potentials = [];
 
         for (const child of node.getRelevantNodes(originalReader)) {
@@ -63,7 +63,7 @@ export class CommandDispatcher {
         return potentials[0];
     }
 
-    getRoot(): RootCommandNode {
+    getRoot(): RootCommandNode<S> {
         return this.root;
     }
 }

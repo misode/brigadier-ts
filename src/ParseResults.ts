@@ -1,15 +1,15 @@
 import { CommandContextBuilder, StringReader} from "./internal";
 
-export class ParseResults {
-    private context: CommandContextBuilder;
+export class ParseResults<S> {
+    private context: CommandContextBuilder<S>;
     private reader: StringReader;
 
-    constructor(context: CommandContextBuilder, reader: StringReader) {
+    constructor(context: CommandContextBuilder<S>, reader: StringReader) {
         this.context = context;
         this.reader = reader;
     }
 
-    getContext(): CommandContextBuilder {
+    getContext(): CommandContextBuilder<S> {
         return this.context;
     }
 

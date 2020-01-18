@@ -8,28 +8,39 @@ import {
     ParsedArgument
 } from "../internal";
 
-export class CommandContextBuilder {
+export class CommandContextBuilder<S> {
+    private source: S;
     private arguments: Map<string, ParsedArgument<any>>;
-    private rootNode: CommandNode;
-    private dispatcher: CommandDispatcher;
-    private command: Command;
-    private child: CommandContextBuilder;
+    private rootNode: CommandNode<S>;
+    private dispatcher: CommandDispatcher<S>;
+    private command: Command<S>;
+    private child: CommandContextBuilder<S>;
     private range: StringRange;
-    private nodes: ParsedCommandNode[];
+    private nodes: ParsedCommandNode<S>[];
 
-    constructor(dispatcher: CommandDispatcher, rootNode: CommandNode, start: number) {
+    constructor(dispatcher: CommandDispatcher<S>, source: S, rootNode: CommandNode<S>, start: number) {
         this.dispatcher = dispatcher;
+        this.source = source;
         this.rootNode = rootNode;
         this.range = StringRange.at(start);
         this.nodes = [];
         this.arguments = new Map();
     }
 
-    getRootNode(): CommandNode {
+    withSource(source: S): CommandContextBuilder<S> {
+        this.source = source;
+        return this;
+    }
+
+    getSource(): S {
+        return this.source;
+    }
+
+    getRootNode(): CommandNode<S> {
         return this.rootNode;
     }
 
-    withArgument(name: string, argument: ParsedArgument<any>): CommandContextBuilder {
+    withArgument(name: string, argument: ParsedArgument<any>): CommandContextBuilder<S> {
         this.arguments.set(name, argument);
         return this;
     }
@@ -38,44 +49,44 @@ export class CommandContextBuilder {
         return this.arguments;
     }
 
-    withChild(child: CommandContextBuilder): CommandContextBuilder {
+    withChild(child: CommandContextBuilder<S>): CommandContextBuilder<S> {
         this.child = child;
         return this;
     }
 
-    getChild(): CommandContextBuilder {
+    getChild(): CommandContextBuilder<S> {
         return this.child;
     }
 
-    getLastChild(): CommandContextBuilder {
-        let result: CommandContextBuilder = this;
+    getLastChild(): CommandContextBuilder<S> {
+        let result: CommandContextBuilder<S> = this;
         while (result.getChild() != null) {
             result = result.getChild();
         }
         return result;
     }
 
-    withCommand(command: Command): CommandContextBuilder {
+    withCommand(command: Command<S>): CommandContextBuilder<S> {
         this.command = command;
         return this;
     }
 
-    getCommand(): Command {
+    getCommand(): Command<S> {
         return this.command;
     }
 
-    withNode(node: CommandNode, range: StringRange): CommandContextBuilder {
-        this.nodes.push(new ParsedCommandNode(node, range));
+    withNode(node: CommandNode<S>, range: StringRange): CommandContextBuilder<S> {
+        this.nodes.push(new ParsedCommandNode<S>(node, range));
         this.range = StringRange.encompassing(this.range, range);
         return this;
     }
 
-    getNodes(): ParsedCommandNode[] {
+    getNodes(): ParsedCommandNode<S>[] {
         return this.nodes;
     }
 
-    copy(): CommandContextBuilder {
-        const copy = new CommandContextBuilder(this.dispatcher, this.rootNode, this.range.getStart());
+    copy(): CommandContextBuilder<S> {
+        const copy = new CommandContextBuilder<S>(this.dispatcher, this.source, this.rootNode, this.range.getStart());
         copy.command = this.command;
         copy.child = this.child;
         copy.range = this.range;
@@ -87,12 +98,12 @@ export class CommandContextBuilder {
 
     }
 
-    build(input: string): CommandContext {
+    build(input: string): CommandContext<S> {
         const child = this.child == null ? null : this.child.build(input);
-        return new CommandContext(this.arguments, this.command, this.rootNode, child, this.range);
+        return new CommandContext(this.source, this.arguments, this.command, this.rootNode, child, this.range);
     }
 
-    getDispatcher(): CommandDispatcher {
+    getDispatcher(): CommandDispatcher<S> {
         return this.dispatcher;
     }
 

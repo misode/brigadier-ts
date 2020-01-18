@@ -1,8 +1,8 @@
 import { CommandNode, RootCommandNode, Command } from "../internal";
 
-export abstract class ArgumentBuilder<T extends ArgumentBuilder<T>> {
-    private arguments: RootCommandNode;
-    private command: Command; 
+export abstract class ArgumentBuilder<S, T extends ArgumentBuilder<S, T>> {
+    private arguments: RootCommandNode<S>;
+    private command: Command<S>; 
 
     constructor() {
         this.arguments = new RootCommandNode();
@@ -10,24 +10,24 @@ export abstract class ArgumentBuilder<T extends ArgumentBuilder<T>> {
 
     abstract getThis(): T;
 
-    then(argument: ArgumentBuilder<any> | CommandNode): T {
+    then(argument: ArgumentBuilder<S, any> | CommandNode<S>): T {
         const child = argument instanceof CommandNode ? argument : argument.build();
         this.arguments.addChild(child);
         return this.getThis();
     }
 
-    executes(command: Command): T {
+    executes(command: Command<S>): T {
         this.command = command;
         return this.getThis();
     }
 
-    getArguments(): CommandNode[] {
+    getArguments(): CommandNode<S>[] {
         return this.arguments.getChildren();
     }
 
-    getCommand(): Command {
+    getCommand(): Command<S> {
         return this.command;
     }
 
-    abstract build(): CommandNode;
+    abstract build(): CommandNode<S>;
 }

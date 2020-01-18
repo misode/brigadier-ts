@@ -1,6 +1,6 @@
 import { ArgumentBuilder, LiteralCommandNode } from "../internal";
 
-export class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuilder> {
+export class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumentBuilder<S>> {
     private literal: string;
 
     constructor(literal: string) {
@@ -8,7 +8,7 @@ export class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
         this.literal = literal
     }
 
-    getThis(): LiteralArgumentBuilder {
+    getThis(): LiteralArgumentBuilder<S> {
         return this;
     }
 
@@ -16,8 +16,8 @@ export class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
         return this.literal;
     }
     
-    build(): LiteralCommandNode {
-        const result = new LiteralCommandNode(this.getLiteral(), this.getCommand());
+    build(): LiteralCommandNode<S> {
+        const result = new LiteralCommandNode<S>(this.getLiteral(), this.getCommand());
         for (const argument of this.getArguments()) {
             result.addChild(argument);
         }
@@ -25,6 +25,6 @@ export class LiteralArgumentBuilder extends ArgumentBuilder<LiteralArgumentBuild
     }
 }
 
-export function literal(name: string): LiteralArgumentBuilder {
-    return new LiteralArgumentBuilder(name);
+export function literal(name: string): LiteralArgumentBuilder<any> {
+    return new LiteralArgumentBuilder<any>(name);
 }

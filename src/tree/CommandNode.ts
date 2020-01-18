@@ -6,28 +6,28 @@ import {
     CommandContextBuilder
 } from '../internal';
 
-export abstract class CommandNode {
-    private children: Map<string, CommandNode>;
-    private literals: Map<string, LiteralCommandNode>;
-    private arguments: Map<string, ArgumentCommandNode<any>>;
-    private command: Command;
+export abstract class CommandNode<S> {
+    private children: Map<string, CommandNode<S>>;
+    private literals: Map<string, LiteralCommandNode<S>>;
+    private arguments: Map<string, ArgumentCommandNode<S, any>>;
+    private command: Command<S>;
 
-    constructor(command: Command) {
+    constructor(command: Command<S>) {
         this.children = new Map();
         this.literals = new Map();
         this.arguments = new Map();
         this.command = command;
     }
 
-    getCommand(): Command {
+    getCommand(): Command<S> {
         return this.command;
     }
 
-    getChildren(): CommandNode[] {
+    getChildren(): CommandNode<S>[] {
         return Array.from(this.children.values());
     }
 
-    addChild(node: CommandNode): void {
+    addChild(node: CommandNode<S>): void {
         const child = this.children.get(node.getName());
         if (child != null) {
             if (node.getCommand() != null) {
@@ -46,13 +46,13 @@ export abstract class CommandNode {
         }
     }
 
-    abstract parse(reader: StringReader, context: CommandContextBuilder): void;
+    abstract parse(reader: StringReader, context: CommandContextBuilder<S>): void;
 
     abstract getName(): string;
 
     abstract getUsageText(): string;
 
-    getRelevantNodes(input: StringReader): CommandNode[] {
+    getRelevantNodes(input: StringReader): CommandNode<S>[] {
         if (this.literals.size > 0) {
             const cursor = input.getCursor();
             while (input.canRead() && input.peek() != " ") {

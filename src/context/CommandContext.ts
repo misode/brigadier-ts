@@ -4,14 +4,16 @@ import { Command,
     ParsedArgument
 } from "../internal";
 
-export class CommandContext {
+export class CommandContext<S> {
+    private source: S;
     private arguments: Map<string, ParsedArgument<any>>; 
-    private command: Command;
-    private rootNode: CommandNode;
-    private child: CommandContext;
+    private command: Command<S>;
+    private rootNode: CommandNode<S>;
+    private child: CommandContext<S>;
     private range: StringRange;
 
-    constructor(parsedArguments: Map<string, ParsedArgument<any>>, command: Command, rootNode: CommandNode, child: CommandContext, range: StringRange) {
+    constructor(source: S, parsedArguments: Map<string, ParsedArgument<any>>, command: Command<S>, rootNode: CommandNode<S>, child: CommandContext<S>, range: StringRange) {
+        this.source = source;
         this.arguments = parsedArguments;
         this.command = command;
         this.rootNode = rootNode;
@@ -19,23 +21,27 @@ export class CommandContext {
         this.range = range;
     }
 
-    getChild(): CommandContext {
+    getChild(): CommandContext<S> {
         return this.child;
     }
 
-    getLastChild(): CommandContext {
-        let result: CommandContext = this;
+    getLastChild(): CommandContext<S> {
+        let result: CommandContext<S> = this;
         while (result.getChild() != null) {
             result = result.getChild();
         }
         return result;
     }
 
-    getCommand(): Command {
+    getCommand(): Command<S> {
         return this.command;
     }
 
-    getRootNode(): CommandNode {
+    getSource(): S {
+        return this.source;
+    }
+
+    getRootNode(): CommandNode<S> {
         return this.rootNode;
     }
 

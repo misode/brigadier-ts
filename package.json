@@ -2,8 +2,8 @@
   "name": "brigadier-ts",
   "version": "1.0.1",
   "description": "TypeScript port of Mojang/brigadier",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/internal.js",
+  "types": "dist/internal.d.ts",
   "scripts": {
     "build": "tsc"
   },

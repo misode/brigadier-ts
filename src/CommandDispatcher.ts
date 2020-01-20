@@ -26,12 +26,11 @@ export class CommandDispatcher<S> {
         if (typeof(parse) === "string") {
             parse = this.parse(new StringReader(parse), source);
         }
-        let result = 0;
         const command = parse.getReader().getString();
         const context = parse.getContext().withSource(source).build(command);
 
-        result |= (context.getCommand() ? context.getCommand().call(null, context) : -1);
-
+        const result = context.getCommand() ? context.getCommand().call(null, context) : -1;
+        if (!result) return 1;
         return result;
     }
 

@@ -1,4 +1,5 @@
 import { ArgumentType, StringReader } from "../internal";
+import { CommandSyntaxError } from "../exceptions/CommandSyntaxError";
 
 export class IntegerArgumentType implements ArgumentType<number> {
     private minimum: number;
@@ -20,7 +21,13 @@ export class IntegerArgumentType implements ArgumentType<number> {
     parse(reader: StringReader): number {
         const start = reader.getCursor();
         const result = reader.readInt();
-        // TODO: Throw exceptions when out of range
+        if (result < this.minimum) {
+            reader.setCursor(start);
+            throw CommandSyntaxError.INTEGER_TOO_SMALL.createWithContext(reader, result, this.minimum);
+        } else if (result > this.maximum) {
+            reader.setCursor(start);
+            throw CommandSyntaxError.INTEGER_TOO_BIG.createWithContext(reader, result, this.maximum);
+        }
         return result;
     }
 }

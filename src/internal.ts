@@ -1,5 +1,7 @@
 export * from "./Command"
 export * from "./Predicate"
+export * from "./exceptions/CommandErrorType"
+export * from "./exceptions/CommandSyntaxError"
 export * from "./StringReader"
 export * from "./tree/CommandNode"
 export * from "./tree/LiteralCommandNode"

@@ -1,3 +1,5 @@
+import { CommandSyntaxError } from "./exceptions/CommandSyntaxError";
+
 export class StringReader {
     private string: string;
     private cursor: number;
@@ -68,8 +70,15 @@ export class StringReader {
             this.skip();
         }
         const number = this.string.substring(start, this.cursor);
-        // TODO: Throw exceptions
-        return parseInt(number);
+        if (number.length === 0) {
+            throw CommandSyntaxError.READER_EXPECTED_INT.createWithContext(this);
+        }
+        try {
+            return parseInt(number);
+        } catch (e) {
+            this.cursor = start;
+            throw CommandSyntaxError.READER_INVALID_INT.createWithContext(this, number);
+        }
     }
     
     isAllowedInUnquotedString(c: string): boolean {
@@ -103,7 +112,7 @@ export class StringReader {
                     escaped = false;
                 } else {
                     this.setCursor(this.cursor - 1);
-                    // TODO: Throw exception
+                    throw CommandSyntaxError.READER_INVALID_ESCAPE.createWithContext(this, c);
                 }
             } else if (c === "\\") {
                 escaped = true;
@@ -113,6 +122,7 @@ export class StringReader {
                 result.push(c);
             }
         }
+        throw CommandSyntaxError.READER_EXPECTED_END_OF_QUOTE.createWithContext(this);
     }
 
     readString(): string {
@@ -130,12 +140,15 @@ export class StringReader {
     readBoolean(): boolean {
         const start = this.cursor;
         const value = this.readUnquotedString();
+        if (value.length === 0) {
+            throw CommandSyntaxError.READER_EXPECTED_BOOL.createWithContext(this);
+        }
         if (value === "true") {
             return true
         } else if (value === "false") {
             return false
         } else {
-            // TODO: Throw exception
+            throw CommandSyntaxError.READER_INVALID_BOOL.createWithContext(this, value);
         }
     }
 

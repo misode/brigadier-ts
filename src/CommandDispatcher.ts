@@ -5,7 +5,8 @@ import {
     LiteralArgumentBuilder,
     CommandContextBuilder,
     CommandNode,
-    ParseResults
+    ParseResults,
+    CommandSyntaxError
 } from "./internal";
 
 export class CommandDispatcher<S> {
@@ -26,8 +27,21 @@ export class CommandDispatcher<S> {
         if (typeof(parse) === "string") {
             parse = this.parse(new StringReader(parse), source);
         }
+
+        if (parse.getReader().canRead()) {
+            if (parse.getContext().getRange().isEmpty()) {
+                throw CommandSyntaxError.DISPATCHER_UNKNOWN_COMMAND.createWithContext(parse.getReader());
+            } else {
+                throw CommandSyntaxError.DISPATCHER_UNKNOWN_ARGUMENT.createWithContext(parse.getReader());
+            }
+        }
+
         const command = parse.getReader().getString();
         const context = parse.getContext().withSource(source).build(command);
+
+        if (!context.getCommand()) {
+            throw CommandSyntaxError.DISPATCHER_UNKNOWN_COMMAND.createWithContext(parse.getReader());
+        }
 
         const result = context.getCommand() ? context.getCommand().call(null, context) : -1;
         if (!result) return 1;
@@ -46,7 +60,14 @@ export class CommandDispatcher<S> {
             const context = contextSoFar.copy();
             const reader = new StringReader(originalReader);
 
-            child.parse(reader, context);
+            try {
+                child.parse(reader, context);
+            } catch (e) {
+                throw CommandSyntaxError.DISPATCHER_PARSE_ERROR.createWithContext(reader, e.message);
+            }
+            if (reader.canRead() &&reader.peek() !== " ") {
+                throw CommandSyntaxError.DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
+            }
             context.withCommand(child.getCommand());
 
             if (reader.canRead(2)) {

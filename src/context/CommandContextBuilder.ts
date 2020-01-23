@@ -5,7 +5,8 @@ import {
     CommandContext,
     StringRange,
     ParsedCommandNode,
-    ParsedArgument
+    ParsedArgument,
+    RedirectModifier
 } from "../internal";
 
 export class CommandContextBuilder<S> {
@@ -17,6 +18,8 @@ export class CommandContextBuilder<S> {
     private child: CommandContextBuilder<S>;
     private range: StringRange;
     private nodes: ParsedCommandNode<S>[];
+    private modifier: RedirectModifier<S>;
+    private forks: boolean;
 
     constructor(dispatcher: CommandDispatcher<S>, source: S, rootNode: CommandNode<S>, start: number) {
         this.dispatcher = dispatcher;
@@ -78,6 +81,8 @@ export class CommandContextBuilder<S> {
     withNode(node: CommandNode<S>, range: StringRange): CommandContextBuilder<S> {
         this.nodes.push(new ParsedCommandNode<S>(node, range));
         this.range = StringRange.encompassing(this.range, range);
+        this.modifier = node.getRedirectModifier();
+        this.forks = node.isFork();
         return this;
     }
 
@@ -100,7 +105,7 @@ export class CommandContextBuilder<S> {
 
     build(input: string): CommandContext<S> {
         const child = this.child == null ? null : this.child.build(input);
-        return new CommandContext(this.source, this.arguments, this.command, this.rootNode, child, this.range);
+        return new CommandContext(this.source, input, this.arguments, this.command, this.rootNode, this.nodes, this.range, child, this.modifier, this.forks);
     }
 
     getDispatcher(): CommandDispatcher<S> {

@@ -27,7 +27,7 @@ export class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
     
     build(): ArgumentCommandNode<S, T> {
-        const result = new ArgumentCommandNode(this.getName(), this.getType(), this.getCommand())
+        const result = new ArgumentCommandNode(this.getName(), this.getType(), this.getCommand(), this.getRequirement(), this.getRedirect(), this.getRedirectModifier(), this.isFork());
         for (const argument of this.getArguments()) {
             result.addChild(argument);
         }

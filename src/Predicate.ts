@@ -1,3 +1,1 @@
-export interface Predicate {
-    test(s: any): boolean;
-}
+export type Predicate<S> = (c: S) => boolean;

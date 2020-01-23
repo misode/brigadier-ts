@@ -3,7 +3,9 @@ import {
     Command,
     LiteralCommandNode,
     ArgumentCommandNode,
-    CommandContextBuilder
+    CommandContextBuilder,
+    Predicate,
+    RedirectModifier
 } from '../internal';
 
 export abstract class CommandNode<S> {
@@ -11,12 +13,20 @@ export abstract class CommandNode<S> {
     private literals: Map<string, LiteralCommandNode<S>>;
     private arguments: Map<string, ArgumentCommandNode<S, any>>;
     private command: Command<S>;
+    private requirement: Predicate<S>;
+    private redirect: CommandNode<S>;
+    private modifier: RedirectModifier<S>;
+    private forks: boolean;
 
-    constructor(command: Command<S>) {
+    constructor(command: Command<S>, requirement: Predicate<S>, redirect: CommandNode<S>, modifier: RedirectModifier<S>, forks: boolean) {
         this.children = new Map();
         this.literals = new Map();
         this.arguments = new Map();
         this.command = command;
+        this.requirement = requirement;
+        this.redirect = redirect;
+        this.modifier = modifier;
+        this.forks = forks;
     }
 
     getCommand(): Command<S> {
@@ -25,6 +35,26 @@ export abstract class CommandNode<S> {
 
     getChildren(): CommandNode<S>[] {
         return Array.from(this.children.values());
+    }
+
+    getChild(name: string): CommandNode<S> {
+        return this.children.get(name);
+    }
+
+    getRedirect(): CommandNode<S> {
+        return this.redirect;
+    }
+
+    getRedirectModifier(): RedirectModifier<S> {
+        return this.modifier;
+    }
+
+    isFork(): boolean {
+        return this.forks;
+    }
+
+    canUse(source: S) {
+        return this.requirement(source);
     }
 
     addChild(node: CommandNode<S>): void {
@@ -59,6 +89,7 @@ export abstract class CommandNode<S> {
                 input.skip();
             }
             const text = input.getString().substring(cursor, input.getCursor());
+            input.setCursor(cursor);
             const literal = this.literals.get(text);
             if (literal != null) {
                 return [literal];

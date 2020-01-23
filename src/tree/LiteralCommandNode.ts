@@ -3,14 +3,17 @@ import {
     StringReader,
     Command,
     StringRange,
-    CommandContextBuilder
+    CommandContextBuilder,
+    Predicate,
+    RedirectModifier,
+    CommandSyntaxError
 } from '../internal';
 
 export class LiteralCommandNode<S> extends CommandNode<S> {
     private literal: string;
     
-    constructor(literal: string, command: Command<S>) {
-        super(command);
+    constructor(literal: string, command: Command<S>, requirement: Predicate<S>, redirect: CommandNode<S>, modifier: RedirectModifier<S>, forks: boolean) {
+        super(command, requirement, redirect, modifier, forks);
         this.literal = literal;
     }
 
@@ -21,14 +24,14 @@ export class LiteralCommandNode<S> extends CommandNode<S> {
             contextBuilder.withNode(this, new StringRange(start, end));
             return;
         }
-        // TODO: Throw exception
+        throw CommandSyntaxError.LITERAL_INCORRECT.createWithContext(reader, this.literal);
     }
 
     private parseInternal(reader: StringReader): number {
         const start = reader.getCursor();
         if (reader.canRead(this.literal.length)) {
             const end = start + this.literal.length;
-            if (reader.getString().substring(start, this.literal.length) === this.literal) {
+            if (reader.getString().substr(start, this.literal.length) === this.literal) {
                 reader.setCursor(end);
                 if (!reader.canRead() || reader.peek() == " ") {
                     return end;

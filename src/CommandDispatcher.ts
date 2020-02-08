@@ -137,6 +137,32 @@ export class CommandDispatcher<S> {
         return potentials[0];
     }
 
+    getAllUsage(node: CommandNode<S>, source: S, restricted: boolean): String[] {
+        const result = [];
+        this.getAllUsageImpl(node, source, result, "", restricted);
+        return result;
+    }
+
+    private getAllUsageImpl(node: CommandNode<S>, source: S, result: String[], prefix: string, restricted: boolean): void {
+        if (restricted && !node.canUse(source)) {
+            return;
+        }
+
+        if (node.getCommand() != null) {
+            result.push(prefix);
+        }
+
+        if (node.getRedirect() != null) {
+            const redirect = node.getRedirect() === this.root ? "..." : "->" + node.getRedirect().getUsageText();
+            result.push(prefix.length === 0 ? node.getUsageText() + " " + redirect : prefix + " " + redirect);
+        } else if (node.getChildren().length > 0) {
+            for (const child of node.getChildren()) {
+                const newPrefix = prefix.length === 0 ? child.getUsageText() : prefix + " " + child.getUsageText();
+                this.getAllUsageImpl(child, source, result, newPrefix, restricted);
+            }
+        }
+    }
+
     getRoot(): RootCommandNode<S> {
         return this.root;
     }

@@ -1,37 +1,20 @@
-import { ArgumentType, StringReader } from "../internal";
-import { CommandSyntaxError } from "../exceptions/CommandSyntaxError";
+import { ArgumentType, StringReader, NumberArgumentType, CommandSyntaxError } from "../internal";
 
-export class IntegerArgumentType implements ArgumentType<number> {
-    private minimum: number;
-    private maximum: number;
+export class IntegerArgumentType extends NumberArgumentType implements ArgumentType<number> {
 
-    constructor(minimum: number, maximum: number) {
-        this.minimum = minimum;
-        this.maximum = maximum;
+    constructor(minimum = -2147483648, maximum = 2147483647) {
+        super(minimum, maximum);
     }
 
-    getMinimum(): number {
-        return this.minimum;
+    readNumber(reader: StringReader): number {
+        return reader.readInt();
+    }
+    
+    getTooSmallError() {
+        return CommandSyntaxError.INTEGER_TOO_SMALL;
     }
 
-    getMaximum(): number {
-        return this.maximum;
+    getTooBigError() {
+        return CommandSyntaxError.INTEGER_TOO_BIG;
     }
-
-    parse(reader: StringReader): number {
-        const start = reader.getCursor();
-        const result = reader.readInt();
-        if (result < this.minimum) {
-            reader.setCursor(start);
-            throw CommandSyntaxError.INTEGER_TOO_SMALL.createWithContext(reader, result, this.minimum);
-        } else if (result > this.maximum) {
-            reader.setCursor(start);
-            throw CommandSyntaxError.INTEGER_TOO_BIG.createWithContext(reader, result, this.maximum);
-        }
-        return result;
-    }
-}
-
-export function integer(minimum = -2147483648, maximum = 2147483647): IntegerArgumentType {
-    return new IntegerArgumentType(minimum, maximum);
 }

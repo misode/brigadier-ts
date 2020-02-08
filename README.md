@@ -11,9 +11,9 @@ Example using a command source
 ```js
 import {
     CommandDispatcher,
+    IntegerArgumentType,
     literal,
-    argument,
-    integer
+    argument
 } from "brigadier-ts";
 
 class CommandSource {
@@ -31,7 +31,7 @@ dispatcher.register(literal("random")
     .executes(c => 4)
 );
 dispatcher.register(literal("double")
-    .then(argument("value", integer())
+    .then(argument("value", new IntegerArgumentType())
         .executes(c => 2 * c.get("value"))
     )
 );
@@ -48,9 +48,9 @@ Example using redirection and forking
 ```ts
 import {
     CommandDispatcher,
+    IntegerArgumentType,
     literal,
-    argument,
-    integer
+    argument
 } from "brigadier-ts";
 
 const dispatcher = new CommandDispatcher<number>();

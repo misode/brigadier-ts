@@ -3,11 +3,14 @@ import {
     CommandNode,
     StringReader,
     Command,
+    CommandContext,
     CommandContextBuilder,
     Predicate,
-    RedirectModifier
+    RedirectModifier,
+    ParsedArgument,
+    Suggestions,
+    SuggestionsBuilder
 } from '../internal';
-import { ParsedArgument } from '../context/ParsedArgument';
 
 export class ArgumentCommandNode<S, T> extends CommandNode<S> {
     name: string;
@@ -37,5 +40,9 @@ export class ArgumentCommandNode<S, T> extends CommandNode<S> {
 
     getUsageText(): string {
         return "<" + this.name + ">";
+    }
+    
+    listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): Promise<Suggestions> {
+        return Suggestions.empty();
     }
 }

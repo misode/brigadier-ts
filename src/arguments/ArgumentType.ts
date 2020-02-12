@@ -1,5 +1,16 @@
-import { StringReader } from "../internal";
+import {
+    StringReader,
+    CommandContext,
+    Suggestions,
+    SuggestionsBuilder
+} from "../internal";
+import {  } from "../suggestion/Suggestions";
 
-export interface ArgumentType<T> {
-    parse(reader: StringReader): T;
+
+export abstract class ArgumentType<T> {
+    abstract parse(reader: StringReader): T;
+
+    listSuggestions(context: CommandContext<any>, builder: SuggestionsBuilder): Promise<Suggestions> {
+        return Suggestions.empty();
+    }
 }

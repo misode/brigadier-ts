@@ -1,6 +1,6 @@
-import { ArgumentType, StringReader, NumberArgumentType, CommandSyntaxError } from "../internal";
+import { StringReader, NumberArgumentType, CommandSyntaxError } from "../internal";
 
-export class IntegerArgumentType extends NumberArgumentType implements ArgumentType<number> {
+export class IntegerArgumentType extends NumberArgumentType {
 
     constructor(minimum = -2147483648, maximum = 2147483647) {
         super(minimum, maximum);

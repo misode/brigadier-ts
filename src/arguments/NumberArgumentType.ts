@@ -1,10 +1,11 @@
 import { ArgumentType, StringReader, CommandErrorType } from "../internal";
 
-export abstract class NumberArgumentType implements ArgumentType<number> {
+export abstract class NumberArgumentType extends ArgumentType<number> {
     private minimum: number;
     private maximum: number;
 
     constructor(minimum: number, maximum: number) {
+        super();
         this.minimum = minimum;
         this.maximum = maximum;
     }

@@ -6,7 +6,8 @@ import {
     StringRange,
     ParsedCommandNode,
     ParsedArgument,
-    RedirectModifier
+    RedirectModifier,
+    SuggestionContext
 } from "../internal";
 
 export class CommandContextBuilder<S> {
@@ -114,5 +115,34 @@ export class CommandContextBuilder<S> {
 
     getRange(): StringRange {
         return this.range;
+    }
+
+    findSuggestionContext(cursor: number): SuggestionContext<S> {
+        if (this.range.getStart() <= cursor) {
+            if (this.range.getEnd() < cursor) {
+                if (this.child != null) {
+                    return this.child.findSuggestionContext(cursor);
+                } else if (this.nodes.length > 0) {
+                    const last = this.nodes[this.nodes.length - 1];
+                    return new SuggestionContext(last.getNode(), last.getRange().getEnd() + 1);
+                } else {
+                    return new SuggestionContext(this.rootNode, this.range.getStart());
+                }
+            } else {
+                let prev = this.rootNode;
+                for (const node of this.nodes) {
+                    const nodeRange = node.getRange();
+                    if (nodeRange.getStart() <= cursor && cursor <= nodeRange.getEnd()) {
+                        return new SuggestionContext(prev, nodeRange.getStart());
+                    }
+                    prev = node.getNode();
+                }
+                if (prev === null) {
+                    throw new Error("Can't find node before cursor");
+                }
+                return new SuggestionContext(prev, this.range.getStart());
+            }
+        }
+        throw new Error("Can't find node before cursor");
     }
 }

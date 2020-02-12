@@ -6,9 +6,10 @@ import {
     CommandContextBuilder,
     CommandNode,
     ParseResults,
-    CommandSyntaxError
+    CommandSyntaxError,
+    Suggestions,
+    SuggestionsBuilder
 } from "./internal";
-import { CommandContext } from "./context/CommandContext";
 
 export class CommandDispatcher<S> {
 
@@ -91,7 +92,8 @@ export class CommandDispatcher<S> {
         return forked ? successfulForks : result;
     }
 
-    parse(reader: StringReader, source: S): ParseResults<S> {
+    parse(reader: StringReader | string, source: S): ParseResults<S> {
+        reader = new StringReader(reader);
         const context = new CommandContextBuilder<S>(this, source, this.root, reader.getCursor());
         return this.parseNodes(this.root, reader, context);
     }
@@ -161,6 +163,32 @@ export class CommandDispatcher<S> {
                 this.getAllUsageImpl(child, source, result, newPrefix, restricted);
             }
         }
+    }
+
+    async getCompletionSuggestions(parse: ParseResults<S>, cursor?: number): Promise<Suggestions> {
+        if (cursor === undefined) {
+            cursor = parse.getReader().getTotalLength();
+        }
+        const context = parse.getContext();
+        const nodeBeforeCursor = context.findSuggestionContext(cursor);
+        const parent = nodeBeforeCursor.parent;
+        const start = Math.min(nodeBeforeCursor.startPos, cursor);
+
+        const fullInput = parse.getReader().getString();
+        const truncatedInput = fullInput.substring(0, cursor);
+        let promises: Promise<Suggestions>[] = [];
+        for (const node of parent.getChildren()) {
+            let promise = Suggestions.empty();
+            try {
+                console.log("!!!", promise);
+                promise = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, start));
+            } catch(ignored) {
+                console.log("???", ignored)
+            }
+            promises.push(promise);
+        }
+        const suggestions = await Promise.all(promises);
+        return Suggestions.merge(fullInput, suggestions);
     }
 
     getRoot(): RootCommandNode<S> {

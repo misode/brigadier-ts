@@ -1,4 +1,11 @@
-import { CommandNode, StringReader, CommandContextBuilder } from '../internal';
+import { 
+    CommandNode,
+    StringReader,
+    CommandContextBuilder,
+    CommandContext,
+    Suggestions,
+    SuggestionsBuilder
+} from '../internal';
 
 export class RootCommandNode<S> extends CommandNode<S> {
 
@@ -15,5 +22,9 @@ export class RootCommandNode<S> extends CommandNode<S> {
 
     getUsageText(): string {
         return "";
+    }
+
+    listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): Promise<Suggestions> {
+        return Suggestions.empty();
     }
 }

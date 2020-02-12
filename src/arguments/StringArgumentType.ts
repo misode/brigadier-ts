@@ -2,10 +2,11 @@ import { ArgumentType, StringReader } from "../internal";
 
 type StringType = "single_word" | "quotable_phrase" | "greedy_phrase";
 
-export class StringArgumentType implements ArgumentType<string> {
+export class StringArgumentType extends ArgumentType<string> {
     private type: StringType;
 
     constructor(type: StringType) {
+        super();
         this.type = type;
     }
 

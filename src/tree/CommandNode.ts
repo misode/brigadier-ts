@@ -3,9 +3,12 @@ import {
     Command,
     LiteralCommandNode,
     ArgumentCommandNode,
+    CommandContext,
     CommandContextBuilder,
     Predicate,
-    RedirectModifier
+    RedirectModifier,
+    SuggestionsBuilder,
+    Suggestions
 } from '../internal';
 
 export abstract class CommandNode<S> {
@@ -81,6 +84,8 @@ export abstract class CommandNode<S> {
     abstract getName(): string;
 
     abstract getUsageText(): string;
+
+    abstract listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): Promise<Suggestions>;
 
     getRelevantNodes(input: StringReader): CommandNode<S>[] {
         if (this.literals.size > 0) {

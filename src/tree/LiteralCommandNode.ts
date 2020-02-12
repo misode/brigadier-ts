@@ -3,10 +3,13 @@ import {
     StringReader,
     Command,
     StringRange,
+    CommandContext,
     CommandContextBuilder,
     Predicate,
     RedirectModifier,
-    CommandSyntaxError
+    CommandSyntaxError,
+    Suggestions,
+    SuggestionsBuilder
 } from '../internal';
 
 export class LiteralCommandNode<S> extends CommandNode<S> {
@@ -49,5 +52,13 @@ export class LiteralCommandNode<S> extends CommandNode<S> {
 
     getUsageText(): string {
         return this.literal;
+    }
+
+    listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): Promise<Suggestions> {
+        if (this.literal.toLowerCase().startsWith(builder.getRemaining().toLowerCase())) {
+            return builder.suggest(this.literal).buildPromise();
+        } else {
+            return Suggestions.empty();
+        }
     }
 }

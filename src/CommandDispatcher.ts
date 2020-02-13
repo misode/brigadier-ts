@@ -116,7 +116,7 @@ export class CommandDispatcher<S> {
                 try {
                     child.parse(reader, context);
                 } catch (e) {
-                    if (e.message.endsWith("<--[HERE]")) {
+                    if (e instanceof CommandSyntaxError) {
                         throw e;
                     } else {
                         throw CommandSyntaxError.DISPATCHER_PARSE_ERROR.createWithContext(reader, e.message);
@@ -126,8 +126,7 @@ export class CommandDispatcher<S> {
                     throw CommandSyntaxError.DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
                 }
             } catch (e) {
-                const err: Error = e;
-                if (e.message.endsWith("<--[HERE]")) {
+                if (e instanceof CommandSyntaxError) {
                     errors.set(child, e);
                     reader.setCursor(cursor);
                     continue;

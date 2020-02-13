@@ -8,6 +8,7 @@ export class CommandSyntaxError extends Error {
 
     constructor(message: string, input?: string, cursor?: number) {
         super(message);
+        Object.setPrototypeOf(this, CommandSyntaxError.prototype);
         this.input = input;
         this.cursor = cursor;
 

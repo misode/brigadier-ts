@@ -31,7 +31,9 @@ export class CommandDispatcher<S> {
         }
 
         if (parse.getReader().canRead()) {
-            if (parse.getContext().getRange().isEmpty()) {
+            if (parse.getErrors().size == 1) {
+                throw parse.getErrors().values().next();
+            } else if (parse.getContext().getRange().isEmpty()) {
                 throw CommandSyntaxError.DISPATCHER_UNKNOWN_COMMAND.createWithContext(parse.getReader());
             } else {
                 throw CommandSyntaxError.DISPATCHER_UNKNOWN_ARGUMENT.createWithContext(parse.getReader());
@@ -77,7 +79,6 @@ export class CommandDispatcher<S> {
                         result += value ? value : 1;
                         successfulForks++;
                     } catch (e) {
-                        console.log("!!!", e.message);
                         if (!forked) throw e;
                     }
                 }
@@ -100,7 +101,9 @@ export class CommandDispatcher<S> {
 
     private parseNodes(node: CommandNode<S>, originalReader: StringReader, contextSoFar: CommandContextBuilder<S>): ParseResults<S> {
         const source = contextSoFar.getSource();
+        const errors = new Map<CommandNode<S>, CommandSyntaxError>();
         let potentials = [];
+        const cursor = originalReader.getCursor();
 
         for (const child of node.getRelevantNodes(originalReader)) {
             if (!child.canUse(source)) {
@@ -110,31 +113,46 @@ export class CommandDispatcher<S> {
             const reader = new StringReader(originalReader);
 
             try {
-                child.parse(reader, context);
+                try {
+                    child.parse(reader, context);
+                } catch (e) {
+                    if (e.message.endsWith("<--[HERE]")) {
+                        throw e;
+                    } else {
+                        throw CommandSyntaxError.DISPATCHER_PARSE_ERROR.createWithContext(reader, e.message);
+                    }
+                }
+                if (reader.canRead() && reader.peek() !== " ") {
+                    throw CommandSyntaxError.DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
+                }
             } catch (e) {
-                throw CommandSyntaxError.DISPATCHER_PARSE_ERROR.createWithContext(reader, e.message);
+                const err: Error = e;
+                if (e.message.endsWith("<--[HERE]")) {
+                    errors.set(child, e);
+                    reader.setCursor(cursor);
+                    continue;
+                } else {
+                    throw e;
+                }
             }
-            if (reader.canRead() && reader.peek() !== " ") {
-                throw CommandSyntaxError.DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR.createWithContext(reader);
-            }
-            context.withCommand(child.getCommand());
 
+            context.withCommand(child.getCommand());
             if (reader.canRead(child.getRedirect() === null ? 2 : 1)) {
                 reader.skip();
                 if (child.getRedirect()) {
                     const childContext = new CommandContextBuilder<S>(this, source, child.getRedirect(), reader.getCursor());
                     const parse = this.parseNodes(child.getRedirect(), reader, childContext);
                     context.withChild(parse.getContext());
-                    return new ParseResults<S>(context, parse.getReader());
+                    return new ParseResults<S>(context, parse.getReader(), parse.getErrors());
                 } else {
                     potentials.push(this.parseNodes(child, reader, context));
                 }
             } else {
-                potentials.push(new ParseResults(context, reader));
+                potentials.push(new ParseResults(context, reader, new Map()));
             }
         }
         if (potentials.length == 0) {
-            potentials.push(new ParseResults(contextSoFar, originalReader));
+            potentials.push(new ParseResults(contextSoFar, originalReader, errors));
         }
         return potentials[0];
     }
@@ -180,7 +198,6 @@ export class CommandDispatcher<S> {
         for (const node of parent.getChildren()) {
             let promise = Suggestions.empty();
             try {
-                console.log("!!!", promise);
                 promise = node.listSuggestions(context.build(truncatedInput), new SuggestionsBuilder(truncatedInput, start));
             } catch(ignored) {
                 console.log("???", ignored)

@@ -7,7 +7,8 @@ npm install brigadier-ts
 ```
 
 ## Usage
-Example using a command source
+
+#### Example using a command source
 ```js
 import {
     CommandDispatcher,
@@ -44,7 +45,7 @@ console.log(dispatcher.execute("double 3", null)); // 6
 console.log(dispatcher.execute("add", new CommandSource(3))); // 7
 ```
 
-Example using redirection and forking
+#### Example using redirection and forking
 ```ts
 import {
     CommandDispatcher,
@@ -80,4 +81,41 @@ dispatcher.register(literal("say")
 )
 
 console.log(dispatcher.execute("execute enumerate 5 run say", 0));
+```
+
+#### Example using suggestions and errors
+```ts
+import {
+    CommandDispatcher,
+    IntegerArgumentType,
+    literal,
+    argument
+} from "brigadier-ts";
+
+const dispatcher = new CommandDispatcher<number>();
+dispatcher.register(literal("double")
+    .then(argument("value", new IntegerArgumentType())
+        .executes(c => 2 * c.get("value"))
+    )
+);
+
+const getFeedback = async (command: string): Promise<string> => {
+    const parseResults = dispatcher.parse(command, null);
+    if (parseResults.getErrors().size > 0) {
+        return command + " >> " + parseResults.getErrors().values().next().value.message;
+    }
+    const suggestions = await dispatcher.getCompletionSuggestions(parseResults);
+    if (suggestions.getList().length > 0) {
+        return command + " >> S " + suggestions.getList()[0].getText();
+    }
+    const usage = dispatcher.getAllUsage(parseResults.getContext().getRootNode(), null, false);
+    if (usage.length > 0) {
+        return command + " >> U " + usage[0];
+    }
+    return command;
+}
+
+getFeedback("dou").then(f => console.log(f)); // dou >> S double
+getFeedback("double").then(f => console.log(f)); // double >> U double <value>
+getFeedback("double ").then(f => console.log(f)); // double  >> Expected integer at position 7: double <--[HERE]
 ```

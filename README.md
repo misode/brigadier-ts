@@ -106,7 +106,8 @@ const getFeedback = async (command: string): Promise<string> => {
     }
     const suggestions = await dispatcher.getCompletionSuggestions(parseResults);
     if (suggestions.getList().length > 0) {
-        return command + " >> S " + suggestions.getList()[0].getText();
+        const s = suggestions.getList()[0];
+        return command + " >> S " + s.getText() + " (" + s.getRange().getStart() + ", " + s.getRange().getEnd() + ")";
     }
     const usage = dispatcher.getAllUsage(parseResults.getContext().getRootNode(), null, false);
     if (usage.length > 0) {

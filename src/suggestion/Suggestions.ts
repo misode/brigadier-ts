@@ -44,8 +44,8 @@ export class Suggestions {
         if (suggestions.length === 0) {
             return Suggestions.EMPTY;
         }
-        let start = -Infinity;
-        let end = Infinity;
+        let start = Infinity;
+        let end = -Infinity;
         for (const suggestion of suggestions) {
             start = Math.min(suggestion.getRange().getStart(), start);
             end = Math.max(suggestion.getRange().getEnd(), end);

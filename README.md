@@ -62,7 +62,7 @@ dispatcher.register(literal("execute")
         .redirect(dispatcher.getRoot())
     )
     .then(literal("enumerate")
-        .then(argument("nums", integer())
+        .then(argument("nums", new IntegerArgumentType())
             .fork(execute, c => {
                 let list: number[] = [];
                 for (let i = c.get("nums"); i > 0; i--) {

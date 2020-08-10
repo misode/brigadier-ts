@@ -10,7 +10,7 @@ import {
 export class RootCommandNode<S> extends CommandNode<S> {
 
     constructor() {
-        super(null, c => null, null, c => null, false);
+        super(null, c => true, null, c => null, false);
     }
 
     parse(reader: StringReader, contextBuilder: CommandContextBuilder<S>): void {

@@ -15,6 +15,12 @@ export class CommandDispatcher<S> {
 
     private root: RootCommandNode<S>;
 
+    private static USAGE_OPTIONAL_OPEN = "[";
+    private static USAGE_OPTIONAL_CLOSE = "]";
+    private static USAGE_REQUIRED_OPEN = "(";
+    private static USAGE_REQUIRED_CLOSE = ")";
+    private static USAGE_OR = "|";
+
     constructor() {
         this.root = new RootCommandNode();
     }
@@ -172,7 +178,7 @@ export class CommandDispatcher<S> {
         }
 
         if (node.getRedirect() != null) {
-            const redirect = node.getRedirect() === this.root ? "..." : "->" + node.getRedirect().getUsageText();
+            const redirect = node.getRedirect() === this.root ? "..." : "-> " + node.getRedirect().getUsageText();
             result.push(prefix.length === 0 ? node.getUsageText() + " " + redirect : prefix + " " + redirect);
         } else if (node.getChildren().length > 0) {
             for (const child of node.getChildren()) {
@@ -205,6 +211,87 @@ export class CommandDispatcher<S> {
         }
         const suggestions = await Promise.all(promises);
         return Suggestions.merge(fullInput, suggestions);
+    }
+
+    getSmartUsage(node: CommandNode<S>, source: S): Map<CommandNode<S>, string>;
+    getSmartUsage(node: CommandNode<S>, source: S, optional: boolean, deep: boolean): string;
+
+    getSmartUsage(node: CommandNode<S>, source: S, optional?: boolean, deep?: boolean): Map<CommandNode<S>, string> | string {
+        if (optional === undefined && deep === undefined) {
+            const result = new Map<CommandNode<S>, string>();
+            const optional: boolean = node.getCommand() !== undefined && node.getCommand() !== null;
+            const children = node.getChildren();
+
+            for (const index in children) {
+                const child = children[index];
+                const usage = this.getSmartUsage(child, source, optional, false);
+
+                if (usage !== undefined) {
+                    result.set(child, usage);
+                }
+            }
+
+            return result;
+        } else {
+
+            if (!node.canUse(source)) {
+                return undefined
+            }
+
+            const self: string = optional ? CommandDispatcher.USAGE_OPTIONAL_OPEN + node.getUsageText() + CommandDispatcher.USAGE_OPTIONAL_CLOSE : node.getUsageText();
+            const childOptional: boolean = node.getCommand() !== undefined;
+            const open: string = childOptional ? CommandDispatcher.USAGE_OPTIONAL_OPEN : CommandDispatcher.USAGE_REQUIRED_OPEN
+            const close: string = childOptional ? CommandDispatcher.USAGE_OPTIONAL_CLOSE : CommandDispatcher.USAGE_REQUIRED_CLOSE
+
+            if (!deep) {
+                if (node.getRedirect() !== undefined) {
+                    const redirect: String = node.getRedirect() === this.root ? "..." : "-> " + node.getRedirect().getUsageText();
+                    return self + " " + redirect;
+                } else {
+                    const children: CommandNode<S>[] = node.getChildren().filter(c => c.canUse(source))
+
+                    if (children.length === 1) {
+                        const usage = String(this.getSmartUsage(children[0], source, childOptional, childOptional));
+                        
+                        if (usage !== undefined) {
+                            return self + " " + usage;
+                        }
+                    } else if (children.length > 1) {
+                        let childUsage = new Set<String>();
+
+                        for (const index in children) {
+                            const child = children[index];
+                            const usage = this.getSmartUsage(child, source, childOptional, true);
+
+                            if (usage !== undefined) {
+                                childUsage.add(usage)
+                            }
+                        }
+
+                        if (childUsage.size === 1) {
+                            const usage = childUsage.values().next().value
+                            return self + " " + (childOptional ? CommandDispatcher.USAGE_OPTIONAL_OPEN + usage + CommandDispatcher.USAGE_OPTIONAL_CLOSE: usage);
+                        } else if (childUsage.size > 1) {
+                            let builder = open
+
+                            for (let index = 0; index < children.length; index++) {
+                                const child = children[index]
+
+                                if (index > 0) {
+                                    builder += CommandDispatcher.USAGE_OR
+                                }
+                                builder += child.getUsageText()
+                            }
+
+                            if (children.length > 0) {
+                                builder += close
+                                return self + " " + builder;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     getRoot(): RootCommandNode<S> {

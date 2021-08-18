@@ -26,7 +26,7 @@ export abstract class NumberArgumentType extends ArgumentType<number> {
             throw this.getTooSmallError().createWithContext(reader, result, this.minimum);
         } else if (result > this.maximum) {
             reader.setCursor(start);
-            throw this.getTooBigError().createWithContext(reader, result, this.minimum);
+            throw this.getTooBigError().createWithContext(reader, result, this.maximum);
         }
         return result;
     }

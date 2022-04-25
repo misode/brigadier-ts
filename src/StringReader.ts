@@ -74,7 +74,11 @@ export class StringReader {
             throw CommandSyntaxError.READER_EXPECTED_INT.createWithContext(this);
         }
         try {
-            return parseInt(number);
+            const value = Number(number);
+            if (isNaN(value) || !Number.isInteger(value)) {
+                throw new Error()
+            }
+            return value
         } catch (e) {
             this.cursor = start;
             throw CommandSyntaxError.READER_INVALID_INT.createWithContext(this, number);
@@ -91,7 +95,11 @@ export class StringReader {
             throw CommandSyntaxError.READER_EXPECTED_FLOAT.createWithContext(this);
         }
         try {
-            return parseFloat(number);
+            const value = Number(number);
+            if (isNaN(value)) {
+                throw new Error()
+            }
+            return value
         } catch (e) {
             this.cursor = start;
             throw CommandSyntaxError.READER_INVALID_FLOAT.createWithContext(this, number);

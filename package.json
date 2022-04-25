@@ -6,7 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rimraf dist/ && tsc --build",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "node --experimental-vm-modules --no-warnings node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,9 @@
   },
   "homepage": "https://github.com/misode/brigadier-ts#readme",
   "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "esbuild-jest": "^0.5.0",
+    "jest": "^27.5.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.6.3"
   }

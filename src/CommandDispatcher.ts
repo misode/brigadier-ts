@@ -9,7 +9,7 @@ import {
     CommandSyntaxError,
     Suggestions,
     SuggestionsBuilder
-} from "./internal";
+} from ".";
 
 export class CommandDispatcher<S> {
 

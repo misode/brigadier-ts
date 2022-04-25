@@ -9,7 +9,7 @@ import {
     RedirectModifier,
     SuggestionsBuilder,
     Suggestions
-} from '../internal';
+} from '..';
 
 export abstract class CommandNode<S> {
     private children: Map<string, CommandNode<S>>;

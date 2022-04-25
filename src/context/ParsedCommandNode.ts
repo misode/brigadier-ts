@@ -1,4 +1,4 @@
-import { CommandNode, StringRange } from "../internal";
+import { CommandNode, StringRange } from "..";
 
 export class ParsedCommandNode<S> {
     private node: CommandNode<S>;

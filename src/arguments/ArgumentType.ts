@@ -3,7 +3,7 @@ import {
     CommandContext,
     Suggestions,
     SuggestionsBuilder
-} from "../internal";
+} from "..";
 import {  } from "../suggestion/Suggestions";
 
 

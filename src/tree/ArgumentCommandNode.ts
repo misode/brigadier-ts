@@ -10,7 +10,7 @@ import {
     ParsedArgument,
     Suggestions,
     SuggestionsBuilder
-} from '../internal';
+} from '..';
 
 export class ArgumentCommandNode<S, T> extends CommandNode<S> {
     name: string;

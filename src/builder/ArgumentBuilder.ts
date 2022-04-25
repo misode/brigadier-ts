@@ -4,7 +4,7 @@ import {
     Command,
     Predicate,
     CommandContext
-} from "../internal";
+} from "..";
 
 export type RedirectModifier<S> = (context: CommandContext<S>) => S | S[];
 

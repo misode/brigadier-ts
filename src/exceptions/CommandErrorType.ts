@@ -1,4 +1,4 @@
-import { CommandSyntaxError, StringReader } from "../internal";
+import { CommandSyntaxError, StringReader } from "..";
 
 type CommandErrorFunction = (...args: any[]) => string;
 

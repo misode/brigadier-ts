@@ -1,4 +1,4 @@
-import { StringRange } from "../internal";
+import { StringRange } from "..";
 
 export class Suggestion {
     private range: StringRange;

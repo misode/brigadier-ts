@@ -1,4 +1,4 @@
-import { StringReader, NumberArgumentType, CommandSyntaxError } from "../internal";
+import { StringReader, NumberArgumentType, CommandSyntaxError } from "..";
 
 export class FloatArgumentType extends NumberArgumentType {
 

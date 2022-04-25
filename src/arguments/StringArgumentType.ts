@@ -1,4 +1,4 @@
-import { ArgumentType, StringReader } from "../internal";
+import { ArgumentType, StringReader } from "..";
 
 type StringType = "single_word" | "quotable_phrase" | "greedy_phrase";
 

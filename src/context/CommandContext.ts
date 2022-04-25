@@ -4,7 +4,7 @@ import { Command,
     ParsedArgument,
     ParsedCommandNode,
     RedirectModifier
-} from "../internal";
+} from "..";
 
 export class CommandContext<S> {
     private source: S;

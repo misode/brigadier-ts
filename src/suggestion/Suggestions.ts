@@ -1,4 +1,4 @@
-import { StringRange, Suggestion } from "../internal";
+import { StringRange, Suggestion } from "..";
 
 export class Suggestions {
     static EMPTY = new Suggestions(StringRange.at(0), []);

@@ -1,4 +1,4 @@
-import { ArgumentType, StringReader, CommandErrorType } from "../internal";
+import { ArgumentType, StringReader, CommandErrorType } from "..";
 
 export abstract class NumberArgumentType extends ArgumentType<number> {
     private minimum: number;

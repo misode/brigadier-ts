@@ -4,7 +4,7 @@ import {
     CommandContext,
     SuggestionsBuilder,
     Suggestions
-} from "../internal";
+} from "..";
 
 export class BoolArgumentType extends ArgumentType<boolean> {
 

@@ -2,7 +2,7 @@ import {
     Suggestion,
     Suggestions,
     StringRange
-} from "../internal";
+} from "..";
 
 export class SuggestionsBuilder {
     private input: string;

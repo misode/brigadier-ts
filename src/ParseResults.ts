@@ -3,7 +3,7 @@ import {
     StringReader,
     CommandNode,
     CommandSyntaxError
-} from "./internal";
+} from ".";
 
 export class ParseResults<S> {
     private context: CommandContextBuilder<S>;

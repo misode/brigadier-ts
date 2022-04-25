@@ -10,7 +10,7 @@ import {
     CommandSyntaxError,
     Suggestions,
     SuggestionsBuilder
-} from '../internal';
+} from '..';
 
 export class LiteralCommandNode<S> extends CommandNode<S> {
     private literal: string;

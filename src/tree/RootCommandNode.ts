@@ -5,7 +5,7 @@ import {
     CommandContext,
     Suggestions,
     SuggestionsBuilder
-} from '../internal';
+} from '..';
 
 export class RootCommandNode<S> extends CommandNode<S> {
 

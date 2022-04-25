@@ -1,4 +1,4 @@
-import { CommandNode } from "../internal";
+import { CommandNode } from "..";
 
 export class SuggestionContext<S> {
     parent: CommandNode<S>;

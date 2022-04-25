@@ -8,7 +8,7 @@ import {
     ParsedArgument,
     RedirectModifier,
     SuggestionContext
-} from "../internal";
+} from "..";
 
 export class CommandContextBuilder<S> {
     private source: S;

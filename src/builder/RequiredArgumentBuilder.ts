@@ -2,7 +2,7 @@ import {
     ArgumentBuilder,
     ArgumentType,
     ArgumentCommandNode
-} from "../internal";
+} from "..";
 
 export class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredArgumentBuilder<S, T>> {
     private name: string;

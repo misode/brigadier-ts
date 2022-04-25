@@ -1,4 +1,4 @@
-import { ArgumentBuilder, LiteralCommandNode } from "../internal";
+import { ArgumentBuilder, LiteralCommandNode } from "..";
 
 export class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumentBuilder<S>> {
     private literal: string;

@@ -4,8 +4,6 @@ import {
     Suggestions,
     SuggestionsBuilder
 } from "..";
-import {  } from "../suggestion/Suggestions";
-
 
 export abstract class ArgumentType<T> {
     abstract parse(reader: StringReader): T;

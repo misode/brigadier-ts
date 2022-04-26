@@ -85,6 +85,23 @@ export class StringReader {
         }
     }
 
+    readLong(): BigInt {
+        const start = this.cursor;
+        while (this.canRead() && this.isAllowedNumber(this.peek())) {
+            this.skip();
+        }
+        const number = this.string.substring(start, this.cursor);
+        if (number.length === 0) {
+            throw CommandSyntaxError.READER_EXPECTED_INT.createWithContext(this);
+        }
+        try {
+            return BigInt(number);
+        } catch (e) {
+            this.cursor = start;
+            throw CommandSyntaxError.READER_INVALID_INT.createWithContext(this, number);
+        }
+    }
+
     readFloat(): number {
         const start = this.cursor;
         while (this.canRead() && this.isAllowedNumber(this.peek())) {
@@ -104,9 +121,6 @@ export class StringReader {
             this.cursor = start;
             throw CommandSyntaxError.READER_INVALID_FLOAT.createWithContext(this, number);
         }
-        
-
-        return 0;
     }
 
     isAllowedInUnquotedString(c: string): boolean {

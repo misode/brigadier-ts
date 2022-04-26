@@ -1,24 +1,24 @@
 import { ArgumentType, StringReader, CommandErrorType } from "..";
 
-export abstract class NumberArgumentType extends ArgumentType<number> {
-    private minimum: number;
-    private maximum: number;
+export abstract class NumberArgumentType<N extends number | BigInt = number> extends ArgumentType<N> {
+    private minimum: N;
+    private maximum: N;
 
-    constructor(minimum: number, maximum: number) {
+    constructor(minimum: N, maximum: N) {
         super();
         this.minimum = minimum;
         this.maximum = maximum;
     }
 
-    getMinimum(): number {
+    getMinimum(): N {
         return this.minimum;
     }
 
-    getMaximum(): number {
+    getMaximum(): N {
         return this.maximum;
     }
 
-    parse(reader: StringReader): number {
+    parse(reader: StringReader): N {
         const start = reader.getCursor();
         const result = this.readNumber(reader);
         if (result < this.minimum) {
@@ -31,7 +31,7 @@ export abstract class NumberArgumentType extends ArgumentType<number> {
         return result;
     }
 
-    abstract readNumber(reader: StringReader): number;
+    abstract readNumber(reader: StringReader): N;
 
     abstract getTooSmallError(): CommandErrorType;
 

@@ -25,6 +25,6 @@ export class LiteralArgumentBuilder<S> extends ArgumentBuilder<S, LiteralArgumen
     }
 }
 
-export function literal(name: string): LiteralArgumentBuilder<any> {
-    return new LiteralArgumentBuilder<any>(name);
+export function literal<S = any>(name: string): LiteralArgumentBuilder<S> {
+    return new LiteralArgumentBuilder(name);
 }

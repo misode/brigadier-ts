@@ -35,6 +35,6 @@ export class RequiredArgumentBuilder<S, T> extends ArgumentBuilder<S, RequiredAr
     }
 }
 
-export function argument(name: string, type: ArgumentType<any>): RequiredArgumentBuilder<any, any> {
-    return new RequiredArgumentBuilder<any, any>(name, type);
+export function argument<S = any, T = any>(name: string, type: ArgumentType<T>): RequiredArgumentBuilder<S, T> {
+    return new RequiredArgumentBuilder(name, type);
 }
